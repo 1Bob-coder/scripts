@@ -1,0 +1,31 @@
+#!/bin/bash
+# This greps through the "inheritance.list" file for inherited dependencies.  
+# Example:  whoinherits Observer
+
+lookFor () {
+  local ARRAY=($(grep -w -e "public ${1}" -e "public \w*\:\:${1}" inheritance.list | grep -oh "\w*\.h" | sed 's/.h$//'))
+  local length=${#ARRAY[@]}
+  local level=${2}
+  local ii
+  for (( ii=0; ii < $length; ii++ )); do
+    if [ ${level} == 0 ] ; then
+      echo "   |---->"  ${ARRAY[ii]} 
+    elif [ ${level} == 1 ] ; then
+      echo "   |    |---->"  ${ARRAY[ii]} 
+    elif [ ${level} == 2 ] ; then
+      echo "   |    |    |---->"  ${ARRAY[ii]} 
+    elif [ ${level} == 3 ] ; then
+      echo "   |    |    |    |---->"  ${ARRAY[ii]} 
+    elif [ ${level} == 4 ] ; then
+      echo "   |    |    |    |     |---->"  ${ARRAY[ii]} 
+    elif [ ${level} == 5 ] ; then
+      echo "   |    |    |    |     |     |---->"  ${ARRAY[ii]} 
+    else 
+      echo "   |    |    |    |     |     |    | Class " $1 " inherited by:  ---- " ${ARRAY[ii]} 
+    fi
+    lookFor "${ARRAY[ii]}"  $((${2}+1))
+  done
+}
+
+echo $1
+lookFor $1 0

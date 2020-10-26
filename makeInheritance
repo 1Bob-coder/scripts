@@ -1,0 +1,5 @@
+#!/bin/bash
+# This creates an "inheritance.list" file for inherited dependencies.  
+# Note:  Go to the neptune_src directory before typing this.
+# Example:  makeInheritance
+grep -r --include "*.h" "class \S\+ :" -A 5 . | grep "public " > inheritance.list
